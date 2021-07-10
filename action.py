@@ -66,12 +66,44 @@ def login(infos,phone,password):
                 data = html.get('data')
                 nickname = data.get('nickname')
                 print('='*40)
-                print('昵称：'+nickname+'----->登录成功')
+                print(nickname+'----->登录成功')
+                #获取cookie值,转成字典格式
+                cookies_dict = requests.utils.dict_from_cookiejar(r.cookies)
+                #签到
+                #退出
+                logout(nickname,cookies_dict)
             else:
                 print('登录失败')
                 return
         except:
             print('false')
+
+#logout
+def logout(nickname,cookies):
+        logout_url = 'https://passport.iqiyi.com/apis/user/logout.action'
+        logout_headers = {
+            'Accept': '*/*',
+
+            'Connection': 'keep-alive',
+
+            # 'Cookie': cookies,
+
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
+        }
+        logout_fromdata = {
+            'agenttype': '1',
+            'fromSDK': '1',
+            'noredirect': '1',
+            'ptid': '01010021010000000000',
+            'sdk_version': '1.0.0',
+        }
+        res = requests.post(url=logout_url,headers=logout_headers,cookies = cookies,data=logout_fromdata)
+        if res.status_code == 200:
+            print(nickname+'----->注销成功!')
+            print('='*40)
+        else:
+            print('注销失败')
+
 
 def main(infos):
     phone = infos["phone"]
