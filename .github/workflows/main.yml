@@ -35,4 +35,4 @@ jobs:
         PASSWORD: ${{ secrets.PASSWORD }}
         
       run: |
-        python3 action.py PHONE PASSWORD
+        python3 action.py ${PHONE} ${PASSWORD}
