@@ -73,7 +73,12 @@ def login(infos,phone,password):
             #获取cookie值,转成字典格式
             cookies_dict = requests.utils.dict_from_cookiejar(session.cookies)
             #签到
-            member_sign(cookies_dict)
+            msg0  = member_sign(cookies_dict)
+            #获取用户信息
+            msg1 = get_info(cookies_dict)
+            #输出信息
+            msg = msg0 + msg1
+            print(msg)
             #退出
             logout(nickname,cookies_dict)
         else:
@@ -115,21 +120,45 @@ def member_sign(cookies_dict):
         sign=session.get(url)
         strr = sign.json()
         try:
-            print(strr.get('msg'))
+            sign_msg = strr.get('msg')
         except:
             print('未签')
         str2 = strr.get('data')
-        continueSignDaysAfterMod = str2.get('continueSignDaysAfterMod')
-        continueSignThreshold = str2.get('continueSignThreshold')
-        growth = str2.get('acquireGiftList')
-        print(growth[0])
-        print('continueSignDaysAfterMod:', end="")
-        print(continueSignDaysAfterMod)
-        print('continueSignThreshold:', end="")
-        print(continueSignThreshold)
+        continueSignDaysSum = str2.get('continueSignDaysSum')
+        rewardDay = 7 if continueSignDaysSum%28<=7 else (14 if continueSignDaysSum%28<=14 else 28)
+        rouund_day = 28 if continueSignDaysSum%28 == 0 else continueSignDaysSum%28
+        growth = str2.get('acquireGiftList')[0]
+        msg = f"{sign_msg}\n{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"
+        # print(msg)
     except Exception as e:
+        msg = e
         print(e)
-
+    return msg
+#获取用户信息
+def get_info(cookies_dict):
+    P00001 = cookies_dict.get('P00001')
+    url = 'http://serv.vip.iqiyi.com/vipgrowth/query.action'
+    params = {
+        "P00001": P00001,
+        }
+    res = session.get(url, params=params)
+    if res.json()["code"] == "A00000":
+        try:
+            res_data = res.json()["data"]
+            #VIP等级
+            level = res_data["level"]
+            #升级需要成长值
+            distance = res_data["distance"]
+            #VIP到期时间
+            deadline = res_data["deadline"]
+            msg = f"VIP等级：{level}\n升级需成长值：{distance}\nVIP到期时间:{deadline}"
+            # print(msg)
+        except:
+            msg = res.json()
+    else:
+        msg = res.json()
+        print(msg)
+    return msg
 
 def main(infos):
     '''
