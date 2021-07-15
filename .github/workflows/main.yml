@@ -33,6 +33,7 @@ jobs:
       env:
         PHONE: ${{ secrets.PHONE }}
         PASSWORD: ${{ secrets.PASSWORD }}
+        TOKEN: ${{ secrets.TOKEN }}
         
       run: |
-        python3 action.py PHONE PASSWORD
+        python3 action.py ${PHONE} ${PASSWORD} -t ${TOKEN}
