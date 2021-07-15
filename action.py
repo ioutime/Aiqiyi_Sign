@@ -15,13 +15,17 @@ from http import cookiejar
 session = requests.session()
 
 #推送信息
-def push_info(token,msg):
-    url = "http://www.pushplus.plus/send?token="+token+"&title=爱奇艺打卡&content="+msg+"&template=html"
-    try:
-        requests.get(url=url)
-    except Exception as e:
-        print('推送失败')
-        print(e)
+def push_info(infos,msg):
+    token = infos["token"]
+    if not token:
+        return
+    else: 
+        url = "http://www.pushplus.plus/send?token="+token+"&title=爱奇艺打卡&content="+msg+"&template=html"
+        try:
+            requests.get(url=url)
+        except Exception as e:
+            print('推送失败')
+            print(e)
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -76,6 +80,12 @@ def login(infos,phone,password):
             msg = html.get('msg')
             if(msg == '帐号或密码错误'):
                 print(msg)
+                push_info(infos,msg)
+                return
+            elif(msg == '安全校验不通过'):
+                print(msg)
+                msg = msg + "\n可能是运行次数太多了"
+                push_info(infos,msg)
                 return
             data = html.get('data')
             nickname = data.get('nickname')
@@ -92,14 +102,11 @@ def login(infos,phone,password):
             print(msg)
             #退出
             logout(nickname,cookies_dict)
-            #判断是否推送消息
-            token = infos["token"]
-            if not token:
-                return
-            else:
-                push_info(token,msg)
+            #推送消息
+            push_info(infos,msg)
         else:
             print('登录失败')
+            push_info(infos,'登录失败')
             return
 
 #logout
