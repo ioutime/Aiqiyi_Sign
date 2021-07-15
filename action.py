@@ -14,15 +14,26 @@ from http import cookiejar
 # 创建一个session,作用会自动保存cookie
 session = requests.session()
 
+#推送信息
+def push_info(token,msg):
+    url = "http://www.pushplus.plus/send?token="+token+"&title=爱奇艺打卡&content="+msg+"&template=html"
+    try:
+        requests.get(url=url)
+    except Exception as e:
+        print('推送失败')
+        print(e)
+
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("phone", help="Your Phone Number.")
     parser.add_argument("password", help="The plaint text or MD5 value of the password.")
+    parser.add_argument("-t", dest="token", help="pushplus的token值")
     args = parser.parse_args()
 
     return {
         "phone": args.phone,
         "password": args.password,
+        "token" : args.token
     }
 
 #加密密码    
@@ -81,6 +92,12 @@ def login(infos,phone,password):
             print(msg)
             #退出
             logout(nickname,cookies_dict)
+            #判断是否推送消息
+            token = infos["token"]
+            if not token:
+                return
+            else:
+                push_info(token,msg)
         else:
             print('登录失败')
             return
@@ -132,7 +149,7 @@ def member_sign(cookies_dict):
         # print(msg)
     except Exception as e:
         msg = e
-        print(e)
+        # print(e)
     return msg
 #获取用户信息
 def get_info(cookies_dict):
@@ -157,7 +174,7 @@ def get_info(cookies_dict):
             msg = res.json()
     else:
         msg = res.json()
-        print(msg)
+        # print(msg)
     return msg
 
 def main(infos):
