@@ -82,7 +82,7 @@ def login(infos,phone,password):
                 print(msg)
                 push_info(infos,msg)
                 return
-            elif(msg == '安全校验不通过'):
+            if(msg == '安全校验不通过'):
                 print(msg)
                 msg = msg + "\n可能是运行次数太多了"
                 push_info(infos,msg)
