@@ -12,7 +12,7 @@ import re
 from http import cookiejar
 
 # 创建一个session,作用会自动保存cookie
-session = requests.session()
+Session = requests.session()
 
 #推送信息
 def push_info(infos,msg):
@@ -52,17 +52,13 @@ def encry(password):
 def login(infos,phone,password):
         url = 'https://passport.iqiyi.com/apis/reglogin/login.action'
         headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-
-            'Connection': 'keep-alive',
-
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'
+            
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.70'
 
         }
         formData ={
             'email': phone,
             'fromSDK': '1',
-            'sdk_version': '1.0.0',
             'passwd': password,
             'agenttype': '1',
             '__NEW': '1',
@@ -72,9 +68,9 @@ def login(infos,phone,password):
             'nr': '2',
             'verifyPhone':'1',
             'area_code': '86',
-            'dfp': 'a108aecd4300a148ee94184b13e3289476ec969d7ab9536cc924fc76966f26f788',
+            'dfp': 'a0dd3024dbad184f509b5c7fc18110921d4bf7f60ebbc462dd8b5e2d17f7b9281d',
         }
-        res = session.post(url,headers=headers,data=formData)      
+        res = Session.post(url,headers=headers,data=formData)      
         if res.status_code == 200:
             html = res.json()
             msg = html.get('msg')
@@ -92,7 +88,7 @@ def login(infos,phone,password):
             print('='*40)
             print(nickname+'----->登录成功')
             #获取cookie值,转成字典格式
-            cookies_dict = requests.utils.dict_from_cookiejar(session.cookies)
+            cookies_dict = requests.utils.dict_from_cookiejar(Session.cookies)
             #签到
             msg0  = member_sign(cookies_dict)
             #获取用户信息
@@ -117,7 +113,7 @@ def logout(nickname,cookies):
 
             'Connection': 'keep-alive',
 
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.70',
         }
         logout_fromdata = {
             'agenttype': '1',
@@ -136,12 +132,12 @@ def logout(nickname,cookies):
 #sign
 def member_sign(cookies_dict):
     P00001 = cookies_dict.get('P00001')
-    login = session.get('https://static.iqiyi.com/js/qiyiV2/20201023105821/common/common.js').text
+    login = Session.get('https://static.iqiyi.com/js/qiyiV2/20201023105821/common/common.js').text
     regex1=re.compile("platform:\"(.*?)\"")
     platform=regex1.findall(login)
     url='https://tc.vip.iqiyi.com/taskCenter/task/userSign?P00001='+P00001+'&platform='+platform[0] + '&lang=zh_CN&app_lm=cn&deviceID=pcw-pc&version=v2'
     try:
-        sign=session.get(url)
+        sign=Session.get(url)
         strr = sign.json()
         try:
             sign_msg = strr.get('msg')
@@ -165,7 +161,7 @@ def get_info(cookies_dict):
     params = {
         "P00001": P00001,
         }
-    res = session.get(url, params=params)
+    res = Session.get(url, params=params)
     if res.json()["code"] == "A00000":
         try:
             res_data = res.json()["data"]
