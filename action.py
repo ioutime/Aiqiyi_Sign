@@ -26,7 +26,7 @@ def push_info(infos,msg):
         except Exception as e:
             print('推送失败')
             print(e)
-
+#参数
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("phone", help="Your Phone Number.")
@@ -42,7 +42,7 @@ def get_args():
 
 #加密密码    
 def encry(password):
-    with open('encryption.js', encoding='utf-8') as f:
+    with open('encryption.txt', encoding='utf-8') as f:
         aiqiyi = f.read()
     js = execjs.compile(aiqiyi)
     password = js.call('rsaFun', password)
@@ -80,7 +80,7 @@ def login(infos,phone,password):
                 return
             if(msg == '安全校验不通过'):
                 print(msg)
-                msg = msg + "\n可能是运行次数太多了"
+                msg = msg + "\n可能是运行次数太多了，也可能是dfp变化了"
                 push_info(infos,msg)
                 return
             data = html.get('data')
@@ -154,6 +154,7 @@ def member_sign(cookies_dict):
         msg = e
         # print(e)
     return msg
+
 #获取用户信息
 def get_info(cookies_dict):
     P00001 = cookies_dict.get('P00001')
@@ -180,6 +181,7 @@ def get_info(cookies_dict):
         # print(msg)
     return msg
 
+#主函数
 def main(infos):
     '''
     爱奇艺会员打卡,实现手机号登录自动获取cookie
