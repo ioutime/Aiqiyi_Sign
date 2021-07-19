@@ -36,4 +36,5 @@ jobs:
         TOKEN: ${{ secrets.TOKEN }}
         
       run: |
-        python3 action.py ${PHONE} ${PASSWORD} -t ${TOKEN}
+        if [ ${TOKEN} ];then TOKEN_CMD="-t $TOKEN"; fi
+        python3 action.py ${PHONE} ${PASSWORD} ${TOKEN_CMD} 
