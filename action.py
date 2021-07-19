@@ -42,12 +42,14 @@ def get_args():
 
 #加密密码    
 def encry(password):
-    with open('encryption.txt', encoding='utf-8') as f:
-        aiqiyi = f.read()
-    js = execjs.compile(aiqiyi)
-    password = js.call('rsaFun', password)
-    return password
-
+    try:
+        with open('encryption.txt', encoding='utf-8') as f:
+            aiqiyi = f.read()
+        js = execjs.compile(aiqiyi)
+        password = js.call('rsaFun', password)
+        return password
+    except:
+        print("密码加密失败")
 #login
 def login(infos,phone,password):
         url = 'https://passport.iqiyi.com/apis/reglogin/login.action'
@@ -84,7 +86,13 @@ def login(infos,phone,password):
                 push_info(infos,msg)
                 return
             data = html.get('data')
-            nickname = data.get('nickname')
+            try:
+                nickname = data.get('nickname')
+            except:
+                msg = "登录失败"
+                print(msg)
+                push_info(infos,msg)
+                return  
             print('='*40)
             print(nickname+'----->登录成功')
             #获取cookie值,转成字典格式
