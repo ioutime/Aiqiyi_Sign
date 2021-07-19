@@ -80,7 +80,7 @@ def login(infos,phone,password):
                 return
             if(msg == '安全校验不通过'):
                 print(msg)
-                msg = msg + "\n可能是运行次数太多了，也可能是dfp变化了"
+                msg = msg + "\n可能是运行次数太多了，也可能是dfp变化了，或者设备锁未关"
                 push_info(infos,msg)
                 return
             data = html.get('data')
