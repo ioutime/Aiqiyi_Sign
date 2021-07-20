@@ -34,7 +34,10 @@ jobs:
         PHONE: ${{ secrets.PHONE }}
         PASSWORD: ${{ secrets.PASSWORD }}
         TOKEN: ${{ secrets.TOKEN }}
+        COOKIE: ${{ secrets.COOKIE }}
         
       run: |
+        COOKIE=`echo "${COOKIE}" |sed 's/ //g'`
+        if [ ${COOKIE} ];then COOKIE_CMD="-c ${COOKIE}"; fi
         if [ ${TOKEN} ];then TOKEN_CMD="-t $TOKEN"; fi
-        python3 action.py ${PHONE} ${PASSWORD} ${TOKEN_CMD} 
+        python3 action.py ${PHONE} ${PASSWORD} ${TOKEN_CMD} ${COOKIE_CMD}
