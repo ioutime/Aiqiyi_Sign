@@ -32,12 +32,14 @@ def get_args():
     parser.add_argument("phone", help="Your Phone Number.")
     parser.add_argument("password", help="The plaint text or MD5 value of the password.")
     parser.add_argument("-t", dest="token", help="pushplus的token值")
+    parser.add_argument("-c", dest="cookie", help="cookie值")
     args = parser.parse_args()
 
     return {
         "phone": args.phone,
         "password": args.password,
-        "token" : args.token
+        "token" : args.token,
+        "cookie" : args.cookie
     }
 
 #加密密码    
@@ -51,7 +53,7 @@ def encry(password):
     except:
         print("密码加密失败")
 #login
-def login(infos,phone,password):
+def login(infos,phone,password,cookie):
         url = 'https://passport.iqiyi.com/apis/reglogin/login.action'
         headers = {
             
@@ -81,9 +83,12 @@ def login(infos,phone,password):
                 push_info(infos,msg)
                 return
             if(msg == '安全校验不通过'):
+                msg = msg + "\n可能是触发了滑块验证，或者设备锁未关"
                 print(msg)
-                msg = msg + "\n可能是运行次数太多了，也可能是dfp变化了，或者设备锁未关"
-                push_info(infos,msg)
+                # push_info(infos,msg)
+                #使用备用签到cookie
+                print("使用备用签到cookie")
+                transform(infos,cookie)
                 return
             data = html.get('data')
             try:
@@ -91,7 +96,9 @@ def login(infos,phone,password):
             except:
                 msg = "登录失败"
                 print(msg)
-                push_info(infos,msg)
+                # push_info(infos,msg)
+                print("使用备用签到cookie")
+                transform(infos,cookie)
                 return  
             print('='*40)
             print(nickname+'----->登录成功')
@@ -101,6 +108,7 @@ def login(infos,phone,password):
             msg0  = member_sign(cookies_dict)
             #获取用户信息
             msg1 = get_info(cookies_dict)
+            Session.close()
             #输出信息
             msg = msg0 + msg1
             print(msg)
@@ -110,7 +118,9 @@ def login(infos,phone,password):
             push_info(infos,msg)
         else:
             print('登录失败')
-            push_info(infos,'登录失败')
+            print("使用备用签到cookie")
+            transform(infos,cookie)
+            # push_info(infos,'登录失败')
             return
 
 #logout
@@ -189,18 +199,41 @@ def get_info(cookies_dict):
         # print(msg)
     return msg
 
+#转换获取的COOKIE
+def transform(infos,cookie):
+    cookies = cookie.replace(' ','')
+    dct = {}
+    lst = cookies.split(';')
+    for i in lst:
+        name = i.split('=')[0]
+        value = i.split('=')[1]
+        dct[name] = value
+    #签到
+    msg0  = member_sign(dct)
+    #获取用户信息
+    msg1 = get_info(dct)
+    #输出信息
+    msg = msg0 + msg1
+    print(msg)
+    #推送消息
+    push_info(infos,msg)
+    return
+
 #主函数
 def main(infos):
     '''
-    爱奇艺会员打卡,实现手机号登录自动获取cookie
+    爱奇艺会员打卡,实现手机号登录自动获取cookie或手动获取（建议手动获取）
     '''
     phone = infos["phone"]
     password = infos["password"]
+    cookie = infos["cookie"]
     # Run tasks
-    if not password:
+    if not cookie:
+        print("需要在secrets中添加cookie")
+        push_info(infos,"需要在secrets中添加cookie")
         return
     else:
-        login(infos,phone,encry(password))
+        login(infos,phone,encry(password),cookie)
 
 if __name__=="__main__":
     main(get_args())
