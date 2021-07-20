@@ -73,7 +73,7 @@ def get_info(cookies_dict):
     params = {
         "P00001": P00001,
         }
-    res = Session.get(url, params=params)
+    res = requests.get(url, params=params)
     if res.json()["code"] == "A00000":
         try:
             res_data = res.json()["data"]
@@ -89,7 +89,7 @@ def get_info(cookies_dict):
             msg = res.json()
     else:
         msg = res.json()
-        # print(msg)
+        print(msg)
     return msg
 
 #转换获取的COOKIE
@@ -104,12 +104,12 @@ def transform(infos):
     #签到
     msg0  = member_sign(dct)
     #获取用户信息
-    msg1 = get_info(dct)
-    #输出信息
-    msg = msg0 + msg1
-    print(msg)
+    # msg1 = get_info(dct)
+    # #输出信息
+    # msg = msg0 + msg1
+    print(msg0)
     #推送消息
-    push_info(infos,msg)
+    push_info(infos,msg0)
     return
 
 #主函数

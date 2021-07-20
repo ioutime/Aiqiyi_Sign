@@ -67,15 +67,15 @@ VIP到期时间:2021-10-04
 
 ### COOKIE值获取
 
-1、打开[爱奇艺](https://www.iqiyi.com/)官网，并登录
+1、打开[爱奇艺](https://www.iqiyi.com/)官网，并***登录***
 
-2、按下**F12**，选择**network（**或者是网络）, 按下 **F5** 刷新页面，如下图所示
+2、按下**F12**，选择**network**（或者是网络）, 按下 **F5** 刷新页面，如下图所示
 
-![](/img/2021-7-20 1-1.png)
+<img src="/img/2021-7-20 1-1.png"  />
 
 3、点击第一个**www. iqiyi .com**，右边的**Headers**，找到 **Request Headers**，中的cookie
 
-![](/img/2021-7-20 1-2.png)
+<img src="/img/2021-7-20 1-2.png"  />
 
 ### pushplus 微信公众号推送
 

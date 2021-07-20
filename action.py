@@ -210,13 +210,13 @@ def transform(infos,cookie):
         dct[name] = value
     #签到
     msg0  = member_sign(dct)
-    #获取用户信息
-    msg1 = get_info(dct)
-    #输出信息
-    msg = msg0 + msg1
-    print(msg)
+    # #获取用户信息
+    # msg1 = get_info(dct)
+    # #输出信息
+    # msg = msg0 + msg1
+    print(msg0)
     #推送消息
-    push_info(infos,msg)
+    push_info(infos,msg0)
     return
 
 #主函数
