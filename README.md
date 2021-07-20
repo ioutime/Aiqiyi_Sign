@@ -9,7 +9,7 @@
 
 ## 脚本功能：
 
-1. 登录爱奇艺
+1. 登录爱奇艺,手机号+密码（可能因为滑块验证导致不成功）和 cookie（需要手动获取）
 2. 支持签到，并显示今日成长值，vip到期时间等
 3. 支持本地命令行执行
 4. 支持pushplus 微信公众号推送
@@ -18,8 +18,8 @@
 ## 注意事项：
 
 - 需要是爱奇艺会员
-- 不要太频繁运行该脚本，否则会触发爱奇艺登录的滑块验证
-- 需要关闭设备锁
+- 不要太频繁运行脚本action.py，否则会触发爱奇艺登录的滑块验证
+- 运行action.py需要关闭设备锁
 
 
 使用方法:
@@ -31,16 +31,14 @@
 pip install -r requirements.txt
 ```
 
-### 本地执行脚本
+### 本地执行脚本----local_action.py
 
-参数，phone 和 password 是必要的，其他的选填
+必须：**替换local_action.py的第十四行为自己的cookie值（下面有获取cookie的方法）**，否则运行不成功
+
+参数,选填
 
 ```shell
-usage: action.py [-h] [-t TOKEN] phone password
-
-positional arguments:
-  phone       Your Phone Number.
-  password    The plaint text or MD5 value of the password.
+usage: local_action.py [-h] [-t TOKEN]
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -50,26 +48,34 @@ optional arguments:
 eg:
 
 ```shell
-python action.py 电话号码 密码
+python local_action.py
 ```
 
 结果
 
 ```
-========================================
-nickname----->登录成功
-今日已签到(或签到成功)
-成长值+1
-连续签到：156天
-签到周期：16天/28天
+签到成功
+成长值+2
+连续签到：3天
+签到周期：3天/7天
 VIP等级：4
-升级需成长值：327
-VIP到期时间:2021-10-03
-nickname----->注销成功!
-========================================
+升级需成长值：315
+VIP到期时间:2021-10-04
 ```
 
 
+
+### COOKIE值获取
+
+1、打开[爱奇艺](https://www.iqiyi.com/)官网，并登录
+
+2、按下**F12**，选择**network（**或者是网络）, 按下 **F5** 刷新页面，如下图所示
+
+![](/img/2021-7-20 1-1.png)
+
+3、点击第一个**www. iqiyi .com**，右边的**Headers**，找到 **Request Headers**，中的cookie
+
+![](/img/2021-7-20 1-2.png)
 
 ### pushplus 微信公众号推送
 
@@ -86,19 +92,19 @@ nickname----->注销成功!
 示例：
 
 ```shell
-python .\action.py 电话号码 密码 -t token
+python .\action.py -t token
 ```
 
 结果：
 
 ```
-今日已签到
-成长值 1
-连续签到：156天
-签到周期：16天/28天
+签到成功
+成长值+2
+连续签到：3天
+签到周期：3天/7天
 VIP等级：4
-升级需成长值：327
-VIP到期时间:2021-10-03
+升级需成长值：315
+VIP到期时间:2021-10-04
 ```
 
 
@@ -109,13 +115,16 @@ VIP到期时间:2021-10-03
 
 <img src="/img/2021-7-15 1-0.png" style="zoom:50%;" />
 
-#### 	2. 创建 Secrets
+#### 	2. 创建 Secrets，必填PHONE、PASSWORD、COOKIE
 
 ```
 创建 PHONE，填入手机号（必填）
 创建 PASSWORD（必填）
+创建 COOKIE (必填，以免因为滑块验证导致登录失败)
 创建 TOKEN (选填,pushplus的token值)		
 ```
+
+***cookie值获取方法见上面***
 
 #### 	<img src="/img/2021-7-15 1.png" style="zoom:50%;" />	  
 
