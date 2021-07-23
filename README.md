@@ -126,17 +126,15 @@ VIP到期时间:2021-10-04
 
 ***cookie值获取方法见上面***
 
-#### 	<img src="/img/2021-7-15 1.png" style="zoom:50%;" />	  
+<img src="/img/2021-7-15 1.png" style="zoom:50%;" />	  
 
 #### 	3.启用 Action
 
-点击 Actions，选择 **I understand my workflows, go ahead and enable them**
+点击 Actions，选择 **I understand my workflows, go ahead and enable them**（第一次用可能会出现）
 
 <img src="/img/2021-7-15 1-1.png"  />
 
-**直接fork来的仓库不会自动执行！！！**
-
-必须手动修改项目提交上去，最简单的方法就是修改下图的README.md文件（右侧有网页端编辑按钮）。
+**直接fork来的仓库不会自动执行！！！**，最简单的方法就是，**Star复刻过来的项目**或者**手动修改项目**提交上去，最简单的方法就是修改下图的README.md文件（右侧有网页端编辑按钮）。
 
 <img src="/img/2021-7-15 2.png" style="zoom: 80%;" />	
 
@@ -155,5 +153,6 @@ VIP到期时间:2021-10-04
 
 ## 建议：
 
-    关注爱奇艺的公众号，能接收到会员天数的增加消息
+    1、建议关注爱奇艺的公众号，能接收到会员天数的增加消息
+    2、建议添加微信公众号推送，以便接收是否打卡成功
 
