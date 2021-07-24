@@ -169,8 +169,9 @@ def member_sign(cookies_dict):
         msg = f"{sign_msg}\n{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"
         # print(msg)
     except Exception as e:
-        msg = e
+        # msg = e
         # print(e)
+        msg = "出错了,未签到成功,可能是程序问题,也可能你不是爱奇艺会员"
     return msg
 
 #获取用户信息
