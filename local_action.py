@@ -3,7 +3,7 @@
 @DSEC    :   爱奇艺会员打卡
 @AUTHOR  :   ioutime
 @DATE    :   2021/07/11  00:56:17
-@VERSION :   1.0
+@VERSION :   1.1
 '''
 import requests
 import argparse
@@ -22,8 +22,8 @@ def push_info(infos,msg):
     if not token:
         return
     else: 
-        url = "http://www.pushplus.plus/send?token="+token+"&title=爱奇艺打卡&content="+msg+"&template=html"
         try:
+            url = "http://www.pushplus.plus/send?token="+token+"&title=爱奇艺打卡&content="+msg+"&template=html"
             requests.get(url=url)
         except Exception as e:
             print('推送失败')
@@ -38,14 +38,18 @@ def get_args():
         "token" : args.token,
     }
 
-
-
 #sign
 def member_sign(cookies_dict):
     P00001 = cookies_dict.get('P00001')
+    if P00001 == None:
+        msg = "输入的cookie有问题(P00001)，请重新获取"
+        return msg   
     login = Session.get('https://static.iqiyi.com/js/qiyiV2/20201023105821/common/common.js').text
     regex1=re.compile("platform:\"(.*?)\"")
     platform=regex1.findall(login)
+    if len(platform) == 0:
+        msg = "出错了，无法获取platform"
+        return msg
     url='https://tc.vip.iqiyi.com/taskCenter/task/userSign?P00001='+P00001+'&platform='+platform[0] + '&lang=zh_CN&app_lm=cn&deviceID=pcw-pc&version=v2'
     try:
         sign=Session.get(url)
@@ -53,28 +57,30 @@ def member_sign(cookies_dict):
         try:
             sign_msg = strr.get('msg')
         except:
-            print('未签')
+            msg = "未签"
         str2 = strr.get('data')
         continueSignDaysSum = str2.get('continueSignDaysSum')
         rewardDay = 7 if continueSignDaysSum%28<=7 else (14 if continueSignDaysSum%28<=14 else 28)
         rouund_day = 28 if continueSignDaysSum%28 == 0 else continueSignDaysSum%28
         growth = str2.get('acquireGiftList')[0]
         msg = f"{sign_msg}\n{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"
-        # print(msg)
     except Exception as e:
-        # msg = e
         print(e)
-        msg = "出错了,未签到成功,可能是程序问题,也可能你不是爱奇艺会员"     
+        msg = "出错了,未签到成功,可能是程序问题,也可能你不是爱奇艺会员"
     return msg
 
 #获取用户信息
 def get_info(cookies_dict):
     P00001 = cookies_dict.get('P00001')
+    if P00001 == None:
+        msg = "输入的cookie有问题(P00001)，请重新获取"
+        print(msg)
+        return msg 
     url = 'http://serv.vip.iqiyi.com/vipgrowth/query.action'
     params = {
         "P00001": P00001,
         }
-    res = requests.get(url, params=params)
+    res = Session.get(url, params=params)
     if res.json()["code"] == "A00000":
         try:
             res_data = res.json()["data"]
@@ -85,23 +91,34 @@ def get_info(cookies_dict):
             #VIP到期时间
             deadline = res_data["deadline"]
             msg = f"VIP等级：{level}\n升级需成长值：{distance}\nVIP到期时间:{deadline}"
-            # print(msg)
         except:
-            msg = res.json()
+            msg = "获取个人具体信息失败"
     else:
-        msg = res.json()
-        print(msg)
+        msg = "获取个人信息失败"
     return msg
 
 #转换获取的COOKIE
 def transform(infos):
-    cookies = cookie.replace(' ','')
-    dct = {}
-    lst = cookies.split(';')
-    for i in lst:
-        name = i.split('=')[0]
-        value = i.split('=')[1]
-        dct[name] = value
+    try:
+        cookies = cookie.replace(' ','')
+        dct = {}
+        lst = cookies.split(';')
+        for i in lst:
+            name = i.split('=')[0]
+            value = i.split('=')[1]
+            dct[name] = value
+    except:
+        msg0 = "输入的cookie不正确，请重新获取"
+        print(msg0)
+        push_info(infos,msg0)
+        return
+    #判断是否有要的值
+    P00001 = dct.get('P00001')
+    if P00001 == None:
+        msg0 = "输入的cookie有问题(P00001)，请重新获取"
+        print(msg0)
+        push_info(infos,msg0)
+        return
     #签到
     msg0  = member_sign(dct)
     #获取用户信息
