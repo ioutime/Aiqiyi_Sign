@@ -6,7 +6,6 @@
 >
 > 项目地址：[Aiqiyi_Sign](https://github.com/ioutime/Aiqiyi_Sign)
 
-
 ## 脚本功能：
 
 1. 登录爱奇艺,手机号+密码（可能因为滑块验证导致不成功）和 cookie（需要手动获取）
