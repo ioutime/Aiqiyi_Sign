@@ -28,6 +28,8 @@ def main(infos):
         print("需要在secrets中添加cookie")
         push_info(infos,"需要在secrets中添加cookie")
         return
+    elif not password or not phone:
+        transform(infos,cookie)
     else:
         login(infos,phone,encry(password),cookie)
 
@@ -52,8 +54,8 @@ def get_args():
     参数获取
     '''
     parser = argparse.ArgumentParser()
-    parser.add_argument("phone", help="Your Phone Number.")
-    parser.add_argument("password", help="The plaint text or MD5 value of the password.")
+    parser.add_argument("-p", dest="phone", help="Your Phone Number.")
+    parser.add_argument("-w", dest="password",help="The plaint text value of the password.")
     parser.add_argument("-t", dest="token", help="pushplus的token值")
     parser.add_argument("-c", dest="cookie", help="cookie值")
     args = parser.parse_args()
@@ -99,15 +101,12 @@ def login(infos,phone,password,cookie):
         html = res.json()
         msg = html.get('msg')
         if(msg == '帐号或密码错误'):
-            print(msg)
-            #使用备用签到cookie
             print("帐号或密码错误,使用cookie签到")
             transform(infos,cookie)
             return
         if(msg == '安全校验不通过'):
             msg = msg + "\n可能是触发了滑块验证，或者设备锁未关"
             print(msg)
-            #使用备用签到cookie
             print("安全校验不通过,使用cookie签到")
             transform(infos,cookie)
             return
@@ -115,7 +114,7 @@ def login(infos,phone,password,cookie):
         try:
             nickname = data.get('nickname')
         except:
-            msg = "登录失败"
+            msg = msg + "登录失败－nickname"
             print(msg)
             print("使用cookie签到")
             transform(infos,cookie)
@@ -137,7 +136,7 @@ def login(infos,phone,password,cookie):
         #推送消息
         push_info(infos,msg)
     else:
-        print('登录失败')
+        print('登录失败－code')
         print("使用cookie签到")
         transform(infos,cookie)
         return
@@ -251,10 +250,10 @@ def transform(infos,cookie):
         return
     #签到
     msg0  = member_sign(dct)
-    #获取用户信息
+    # 获取用户信息
     # msg1 = get_info(dct)
-    #输出信息
-    # msg = msg0 + msg1
+    # 输出信息
+    # msg0 = msg0 + msg1
     print(msg0)
     push_info(infos,msg0)
     return

@@ -40,4 +40,6 @@ jobs:
         COOKIE=`echo "${COOKIE}" |sed 's/ //g'`
         if [ ${COOKIE} ];then COOKIE_CMD="-c ${COOKIE}"; fi
         if [ ${TOKEN} ];then TOKEN_CMD="-t $TOKEN"; fi
-        python3 action.py ${PHONE} ${PASSWORD} ${TOKEN_CMD} ${COOKIE_CMD}
+        if [ ${PHONE} ];then PHONE_CMD="-p $PHONE"; fi
+        if [ ${PASSWORD} ];then PASSWORD_CMD="-w $PASSWORD"; fi
+        python3 action.py ${PHONE_CMD} ${PASSWORD_CMD} ${TOKEN_CMD} ${COOKIE_CMD}

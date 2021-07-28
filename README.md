@@ -9,7 +9,7 @@
 
 ## 脚本功能：
 
-1. 登录爱奇艺,手机号+密码（可能因为滑块验证导致不成功）和 cookie（需要手动获取）
+1. 登录爱奇艺,手机号+密码（可能因为滑块验证导致不成功）或 cookie（需要手动获取）
 2. 支持签到，并显示今日成长值，vip到期时间等
 3. 支持本地命令行执行
 4. 支持pushplus 微信公众号推送
@@ -17,7 +17,7 @@
 
 ## 注意事项：
 
-- 需要是爱奇艺会员
+- **需要是爱奇艺会员**
 - 不要太频繁运行脚本action.py，否则会触发爱奇艺登录的滑块验证
 - 运行action.py需要关闭设备锁
 
@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 ### 本地执行脚本----local_action.py
 
-必须：**替换local_action.py的第十四行为自己的cookie值（下面有获取cookie的方法）**，否则运行不成功
+**必须**：**替换local_action.py的第十四行为自己的cookie值（下面有获取cookie的方法）**，否则运行不成功
 
 参数,选填
 
@@ -67,13 +67,13 @@ VIP到期时间:2021-10-04
 
 ### COOKIE值获取
 
-1、打开[爱奇艺](https://www.iqiyi.com/)官网，并***登录***
+1、打开[爱奇艺](https://www.iqiyi.com/)官网，并***登录***，一定要登录
 
 2、按下**F12**，选择**network**（或者是网络）, 按下 **F5** 刷新页面，如下图所示
 
 <img src="/img/2021-7-20 1-1.png"  />
 
-3、点击第一个**www. iqiyi .com**，右边的**Headers**，找到 **Request Headers**，中的cookie
+3、点击第一个**www. iqiyi .com**，右边的**Headers**，找到 **Request Headers**，中的cookie值（从冒号开始）
 
 <img src="/img/2021-7-20 1-2.png"  />
 
@@ -92,7 +92,7 @@ VIP到期时间:2021-10-04
 示例：
 
 ```shell
-python .\action.py -t token
+python local_action.py -t token
 ```
 
 结果：
@@ -115,12 +115,12 @@ VIP到期时间:2021-10-04
 
 <img src="/img/2021-7-15 1-0.png" style="zoom:50%;" />
 
-#### 	2. 创建 Secrets，必填PHONE、PASSWORD、COOKIE
+#### 	2. 创建 Secrets，必填COOKIE~~、PHONE、PASSWORD、~~（由于手机号登录容易出现滑块验证，无法解决，所以取消PHONE和PASSWORD的必填，改为选填）
 
 ```
-创建 PHONE，填入手机号（必填）
-创建 PASSWORD（必填）
 创建 COOKIE (必填，以免因为滑块验证导致登录失败)
+创建 PHONE，填入手机号（选填）
+创建 PASSWORD，明文密码（选填）
 创建 TOKEN (选填,pushplus的token值)		
 ```
 
