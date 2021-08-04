@@ -44,4 +44,4 @@ jobs:
         if [ ${PHONE} ];then PHONE_CMD="-p $PHONE"; fi
         if [ ${PASSWORD} ];then PASSWORD_CMD="-w $PASSWORD"; fi
         if [ ${P00001} ];then P00001_CMD="-s $P00001"; fi
-        python3 action.py ${PHONE_CMD} ${PASSWORD_CMD} ${TOKEN_CMD} ${P00001_CMD}
+        python3 action.py ${PHONE_CMD} ${PASSWORD_CMD} ${TOKEN_CMD} ${P00001_CMD} ${COOKIE_CMD}
