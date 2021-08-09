@@ -307,7 +307,7 @@ def transform(infos,cookie):
         text2 = unquote(text2, 'utf-8').encode('utf-8').decode('unicode_escape')
         text2 = json.loads(text2)
         vipTypes = text2.get('vipTypes')
-        if vipTypes != '1':
+        if vipTypes == '' or vipTypes == ' ':
             nickname = nickname +'不是会员'
             print(nickname)
             push_info(infos,nickname)
