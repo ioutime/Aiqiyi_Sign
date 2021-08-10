@@ -308,7 +308,7 @@ def transform(infos,cookie):
         text2 = json.loads(text2)
         vipTypes = text2.get('vipTypes')
         if vipTypes == '' or vipTypes == ' ':
-            nickname = nickname +'不是会员'
+            nickname = nickname +'你不是爱奇艺会员，无法执行签到'
             print(nickname)
             push_info(infos,nickname)
             return
