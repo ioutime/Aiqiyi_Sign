@@ -3,8 +3,8 @@ import action
 
 infos = {
     "cookie": '''cookie值''',
-    "token" : "",
-    "p00001" : "",
+    "token" : "",#推送token
+    "p00001" : "",#多账号
     "phone": "",
     "password": ""
 }
