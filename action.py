@@ -307,11 +307,9 @@ def transform(infos,cookie):
         text2 = unquote(text2, 'utf-8').encode('utf-8').decode('unicode_escape')
         text2 = json.loads(text2)
         vipTypes = text2.get('vipTypes')
+        #可能判断不准确（我到现在只遇到'' 和 '1'这种情况，不知道是否有其他情况）
         if vipTypes == '' or vipTypes == ' ':
-            nickname = nickname +'你不是爱奇艺会员，无法执行签到'
-            print(nickname)
-            push_info(infos,nickname)
-            return
+            nickname = nickname +'你可能不是爱奇艺会员，所以签到脚本可能不成功\n'
     except Exception as e:
         print(e)
         nickname = ''
