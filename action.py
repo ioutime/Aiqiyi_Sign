@@ -57,7 +57,7 @@ def more_accounts(infos,p00001):
             dct['P00001']=i
             #签到
             msg  = member_sign(dct)
-            if msg != "输入的cookie有问题(P00001)，请重新获取" and msg!='出错了，无法获取platform' and msg!='未签到成功,可能是程序问题,也可能你不是爱奇艺会员':
+            if msg != "输入的cookie有问题(P00001)，请重新获取" and msg!='签到失败\n'and msg!='签到失败1\n'and msg!='签到失败2\n':
                 ans = ans + '   签到成功\n'
             else:
                 ans = ans + '   FALSE\n'
@@ -195,31 +195,30 @@ def member_sign(cookies_dict):
         msg = "输入的cookie有问题(P00001)，请重新获取"
         print(msg)
         return msg 
-    login = Session.get('https://static.iqiyi.com/js/qiyiV2/20201023105821/common/common.js').text
-    regex1=re.compile("platform:\"(.*?)\"")
-    platform=regex1.findall(login)
-    if len(platform) == 0:
-        msg = "出错了，无法获取platform"
-        return msg
-    url='https://tc.vip.iqiyi.com/taskCenter/task/userSign?P00001='+P00001+'&platform='+platform[0] + '&lang=zh_CN&app_lm=cn&deviceID=pcw-pc&version=v2'
+    url = "https://tc.vip.iqiyi.com/taskCenter/task/queryUserTask"
+    params = {
+        "P00001": P00001,
+        "autoSign": "yes"
+    }
     try:
-        sign=Session.get(url)
-        strr = sign.json()
-        try:
-            sign_msg = strr.get('msg')
-        except:
-            print('未签')
-        str2 = strr.get('data')
-        continueSignDaysSum = str2.get('continueSignDaysSum')
-        rewardDay = 7 if continueSignDaysSum%28<=7 else (14 if continueSignDaysSum%28<=14 else 28)
-        rouund_day = 28 if continueSignDaysSum%28 == 0 else continueSignDaysSum%28
-        growth = str2.get('acquireGiftList')[0]
-        msg = f"{sign_msg}\n{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"
-    except Exception as e:
-        print(e)
-        msg = "未签到成功,可能是程序问题,也可能你不是爱奇艺会员"
-    return msg
-
+        res = requests.get(url, params=params)
+        if res.json()["code"] == "A00000":
+            try:
+                growth = res.json()["data"]["signInfo"]["data"]["rewardMap"]["growth"]
+                continueSignDaysSum = res.json()["data"]["signInfo"]["data"]["cumulateSignDaysSum"]
+                rewardDay = 7 if continueSignDaysSum % 28 <= 7 else (
+                    14 if continueSignDaysSum % 28 <= 14 else 28)
+                rouund_day = 28 if continueSignDaysSum % 28 == 0 else continueSignDaysSum % 28
+                msg = f"成长值+{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"             
+            except:
+                print(res.json()["data"]["signInfo"]["msg"])
+                msg = "签到失败\n"
+        else:
+            print(res.json()["msg"])
+            msg = "签到失败1\n"
+        return msg
+    except:
+        return "签到失败2\n"
 
 def get_info(cookies_dict):
     '''
@@ -324,6 +323,8 @@ def transform(infos,cookie):
 
 if __name__=="__main__":
     try:
+        print('='*40)
         main(get_args())
+        print('='*40)
     finally:
         Session.close()
