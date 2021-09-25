@@ -67,8 +67,6 @@ def more_accounts(infos,p00001):
             ans = ans + '   p00001不完整\n'
             print(msg)
         print('='*40)
-    # print(ans)
-    #推送
     if len(ans) <= 300:
         push_info(infos,ans)
     else:
