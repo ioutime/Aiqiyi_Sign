@@ -13,9 +13,9 @@
 2. 支持爱奇艺会员签到打卡，并显示今日成长值，vip到期时间等
 3. 支持本地命令行执行
 4. 支持pushplus 微信公众号推送
-5. 支持 GitHub Actions 部署
+5. 支持腾讯云函数部署（建议，推荐）
 6. 支持多个账户签到（P00001)
-7. 支持腾讯云函数部署
+7. 支持 GitHub Actions 部署
 
 
 ## 注意事项：
@@ -67,17 +67,29 @@ VIP到期时间:2021-10-04
 
 
 
+### 部署参数介绍
+
+```
+ COOKIE (必填)
+ PHONE，填入手机号（选填）
+ PASSWORD，明文密码（选填）
+ TOKEN (选填,pushplus的token值)	
+ P00001(选填，多账号签到使用，注意是四个零; 多个以英文逗号【','】隔开，必须是英文的逗号)
+```
+
+
+
 ### COOKIE值获取
 
 1、打开[爱奇艺](https://www.iqiyi.com/)官网，并***登录***，一定要登录
 
 2、按下**F12**，选择**network**（或者是网络）, 按下 **F5** 刷新页面，如下图所示
 
-<img src="/img/2021-7-20 1-1.png"  />
+<img src="img/2021-7-20 1-1.png"  />
 
 3、点击第一个**www. iqiyi .com**，右边的**Headers**，找到 **Request Headers**，中的cookie值（从冒号开始）
 
-<img src="/img/2021-7-20 1-2.png"  />
+<img src="img/2021-7-20 1-2.png"  />
 
 ### pushplus 微信公众号推送
 
@@ -89,7 +101,7 @@ VIP到期时间:2021-10-04
 2. 找到**一对一推送**，并复制你的**token**
 3. 执行脚本时指定参数`-t`，后接上述 token 值
 
-<img src="/img/2021-7-15 token.png"  />
+<img src="img/2021-7-15 token.png"  />
 
 示例：
 
@@ -111,48 +123,31 @@ VIP到期时间:2021-10-04
 
 
 
-### github仓库部署:
+腾讯云函数部署：
+---
 
-#### 	1. Fork 该仓库
-
-<img src="/img/2021-7-15 1-0.png" style="zoom:50%;" />
-
-#### 	2. 创建 Secrets，必填COOKIE（由于手机号登录容易出现安全验证，所以取消PHONE和PASSWORD的必填，改为选填）
-
-```
-创建 COOKIE (必填)
-创建 PHONE，填入手机号（选填）
-创建 PASSWORD，明文密码（选填）
-创建 TOKEN (选填,pushplus的token值)		
-```
-
-***cookie值获取方法见上面***
-
-<img src="/img/2021-7-15 1.png" style="zoom:50%;" />	  
-
-#### 	3.启用 Action
-
-点击 Actions，选择 **I understand my workflows, go ahead and enable them**（第一次用可能会出现）
-
-<img src="/img/2021-7-15 1-1.png"  />
-
-**直接fork来的仓库不会自动执行！！！**，最简单的方法就是， **手动修改项目**提交上去，最简单的方法就是修改下图的README.md文件（右侧有网页端编辑按钮）。
-
-<img src="/img/2021-7-15 2.png" style="zoom: 80%;" />	
-
-随便修改什么都行，修改完commit就可以了
-
-<img src="/img/2021-7-15 3.png" style="zoom: 67%;" />
-
-之后**每天 0 点**会自动执行一次脚本
+详细过程请看[腾讯云部署.md](https://github.com/ioutime/Aiqiyi_Sign/blob/master/腾讯云部署.md)文件
 
 
 
-### 多个爱奇艺账号github仓库部署：
+github仓库部署:
+---
 
-多个账号部署，和上**面的github仓库部署流程一样**，只是创建的**Secrets**不一样。
+详细过程请看[GitHub部署.md](https://github.com/ioutime/Aiqiyi_Sign/blob/master/github部署.md)文件
 
-#### 创建 Secrets，必填P00001 （下面有如何获取）
+
+
+## 多个爱奇艺账号部署：
+
+多个账号部署，和上**面的两种方式部署流程一样**，只是**需要参数不同**不一样。
+
+### 腾讯云函数部署：
+
+填写必要参数 **P00001** 【注意是四个零; 多个以英文逗号【','】隔开，必须是英文的逗号】
+
+### GitHub部署：
+
+创建 Secrets，必填P00001 （下面有如何获取）
 
 
 ```
@@ -160,24 +155,22 @@ VIP到期时间:2021-10-04
 创建 TOKEN (选填,pushplus的token值)	
 ```
 
-#### P00001的获取与如何填入数据
+P00001的获取与如何填入数据
+---
 
 1、打开[爱奇艺](https://www.iqiyi.com/)官网，并***登录***，一定要登录
 
 2、按下**F12**，选择**Application**（或者是应用程序）, 并选择左侧栏的Cookies ,如下图所示
 
-<img src="/img/2021-8-4 1-1.png"  />
+<img src="img/2021-8-4 1-1.png"  />
 
 3、在搜索栏中输入P00001，回车，如下图所示，复制P00001
 
-<img src="/img/2021-8-4 1-2.png"  />
+<img src="img/2021-8-4 1-2.png"  />
 
 
 
-腾讯云函数部署：
----
 
-详细过程请看[腾讯云部署.md](https://github.com/ioutime/Aiqiyi_Sign/blob/master/腾讯云部署.md)文件
 
 ## 建议：
 
