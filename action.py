@@ -3,7 +3,7 @@
 @DSEC    :   爱奇艺会员打卡
 @AUTHOR  :   ioutime
 @DATE    :   2021/07/11  00:56:17
-@VERSION :   1.2
+@VERSION :   2.0
 '''
 import requests
 import argparse
@@ -12,6 +12,7 @@ from urllib.parse import unquote
 import json
 import datetime
 import calendar
+import time
 
 # 创建一个session,作用会自动保存cookie
 Session = requests.session()
@@ -53,10 +54,10 @@ def more_accounts(infos,p00001):
             dct['P00001']=i
             #签到
             msg  = member_sign(dct)
-            if msg != "输入的cookie有问题(P00001)，请重新获取" and msg!='签到失败\n'and msg!='签到失败1\n'and msg!='签到失败2\n':
+            if msg != "输入的cookie有问题(P00001)，请重新获取" and msg!='失败\n':
                 ans = ans + '   签到成功\n'
             else:
-                ans = ans + '   FALSE\n'
+                ans = ans + '   签到失败！\n'
             print(msg)
         else:
             msg = ' p00001不完整'
@@ -133,13 +134,16 @@ def member_sign(cookies_dict):
                 msg = f"成长值+{growth}\n连续签到：{continueSignDaysSum}天\n签到周期：{rouund_day}天/{rewardDay}天\n"             
             except:
                 print(res.json()["data"]["signInfo"]["msg"])
-                msg = "签到失败\n"
+                print("签到失败\n")
+                msg = "失败\n"
         else:
             print(res.json()["msg"])
-            msg = "签到失败1\n"
+            print("签到失败1\n")
+            msg = "失败\n"
         return msg
     except:
-        return "签到失败2\n"
+        print("签到失败2\n")
+        return "失败\n"
 
 def get_info(cookies_dict):
     '''
@@ -168,6 +172,46 @@ def get_info(cookies_dict):
         print("获取个人信息失败")
         msg = ""
     return msg
+
+def draw(cookies_dict,type):
+    '''
+    查询抽奖次数,抽奖
+    :param type: 0 查询次数；1 抽奖
+    '''
+    P00001 = cookies_dict.get('P00001')
+    P00003 = cookies_dict.get('P00003')
+    url = "https://iface2.iqiyi.com/aggregate/3.0/lottery_activity"
+    params = {
+        "lottery_chance": 1,
+        "app_k": "0",
+        "app_v": "0",
+        "platform_id": 10,
+        "dev_os": "2.0.0",
+        "dev_ua": "COL-AL10",
+        "net_sts": 1,
+        "qyid": "2655b332a116d2247fac3dd66a5285011102",
+        "psp_uid": P00003,
+        "psp_cki": P00001,
+        "psp_status": 3,
+        "secure_v": 1,
+        "secure_p": "0",
+        "req_sn": round(time.time()*1000)
+    }
+    # 抽奖删除 lottery_chance 参数
+    if type == 1:
+        del params["lottery_chance"]
+    res = requests.get(url, params=params)
+ 
+    if not res.json().get('code'):
+        chance = int(res.json().get('daysurpluschance'))
+        msg = res.json().get("awardName")
+        return {"status": "成功", "msg": msg, "chance": chance}
+    else:
+        try:
+            msg = res.json().get("kv", {}).get("msg")
+        except:
+            msg = res.json()["errorReason"]
+    return {"status": "失败", "msg": msg, "chance": 0}
 
 
 def transform(infos,cookie):
@@ -212,10 +256,19 @@ def transform(infos,cookie):
     except Exception as e:
         print(e)
         nickname = ''
+    #查询抽奖次数
+    chance = draw(dct,0).get('chance')
+    #抽奖
+    msg_draw = '\n今日抽奖次数：'+ str(chance)
+    res_msg = ''
+    while(chance > 0):
+        res_msg = res_msg + '\n第'+ str(chance % 3 + 1) +'次抽奖:'+ str(draw(dct,1))
+        chance-=1
+        time.sleep(1)
     #签到
     msg0  = nickname + member_sign(dct)
     #用户信息
-    msg = msg0 + get_info(dct)
+    msg = msg0 + get_info(dct) + msg_draw + res_msg
     print(msg)
     push_info(infos,msg)
     return
