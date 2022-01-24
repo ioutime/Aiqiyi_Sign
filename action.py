@@ -151,6 +151,7 @@ def member_sign(cookies_dict):
         if res.json()["code"] == "A00000":
             try:
                 print(res.json())
+                //接口弄错了
                 state = res.json()["msg"]
                 growthvalue = res.json()["data"]["growthvalue"]
                 msg = f"{state}\n当前 VIP 成长值:{growthvalue}天\n"                        
