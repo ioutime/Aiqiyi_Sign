@@ -142,25 +142,20 @@ def member_sign(cookies_dict):
     签到
     '''
     P00001 = cookies_dict.get('P00001')
-    url = "https://tc.vip.iqiyi.com/taskCenter/task/queryUserTask"
+    url = "https://serv.vip.iqiyi.com/vipgrowth/query.action"
     params = {
-        "P00001": P00001,
-        "autoSign": "yes"
+        "P00001": P00001
     }
     try:
         res = requests.get(url, params=params)
         if res.json()["code"] == "A00000":
             try:
-                growth = res.json()["data"]["signInfo"]["data"]["rewardMap"]["growth"]
-                continueSignDaysSum = res.json()["data"]["signInfo"]["data"]["cumulateSignDaysSum"]
-                today = datetime.datetime.today()
-                monthDay = calendar.monthrange(today.year,today.month)[1]
-                rewardDay = 7 if continueSignDaysSum % monthDay <= 7 else (
-                    14 if continueSignDaysSum % monthDay <= 14 else monthDay)
-                rouund_day = monthDay if continueSignDaysSum % monthDay == 0 else continueSignDaysSum % monthDay
-                msg = f"成长值+{growth}\n连续签到:{continueSignDaysSum}天\n签到周期:{rouund_day}天/{rewardDay}天\n"             
+                print(res.json())
+                state = res.json()["msg"]
+                growthvalue = res.json()["data"]["growthvalue"]
+                msg = f"{state}\n当前 VIP 成长值:{growthvalue}天\n"                        
             except:
-                print(res.json()["data"]["signInfo"]["msg"])
+                print(res.json()["msg"])
                 print("签到失败\n")
                 msg = "失败\n"
         else:
