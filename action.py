@@ -53,7 +53,9 @@ def main(infos):
             vipTypes = text2.get('vipTypes')
             #可能判断不准确（我到现在只遇到'' 和 '1'这种情况，不知道是否有其他情况）
             if vipTypes == '' or vipTypes == ' ':
-                nickname = nickname +'可能是非会员\n'
+                nickname = nickname +'非会员\n'
+            else:
+                nickname = nickname +'会员\n'
         except Exception as e:
             print(e)
             nickname = ''
@@ -69,7 +71,7 @@ def main(infos):
         #签到
         msg0  = nickname + member_sign(dct) + "\n"
         #网页签到
-        msg0 = msg0 + WebCheckin(dct) + "\n"
+        msg0 = msg0 + websign(dct) + "\n"
         #用户信息
         msg = msg0 + get_info(dct) + msg_draw + res_msg 
         end = time.perf_counter()
@@ -188,7 +190,7 @@ def member_sign(cookies_dict):
     return msg
 
 
-def WebCheckin(cookies_dict):
+def websign(cookies_dict):
     '''
     网页签到
     '''
