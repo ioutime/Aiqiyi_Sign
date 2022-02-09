@@ -2,17 +2,19 @@
 @FILE    :   action.py
 @DSEC    :   爱奇艺签到
 @AUTHOR  :   ioutime
-@DATE    :   2021/12/08  21:26:17
-@VERSION :   2.1
+@DATE    :   2022/02/08  18:30:52
+@VERSION :   3.0
 '''
 
+import random
 import requests
 import argparse
 from urllib.parse import unquote
 import json
-import datetime
-import calendar
 import time
+import hashlib
+import string
+from json import dumps
 
 def main(infos):
     '''爱奇艺签到、每日三次抽奖,cookie签到'''
@@ -63,9 +65,11 @@ def main(infos):
         while(chance > 0):
             res_msg = res_msg + '\n第'+ str(chance % 3 + 1) +'次抽奖:'+ draw(dct,1).get('msg')
             chance-=1
-            time.sleep(1)
+            time.sleep(2)
         #签到
-        msg0  = nickname + member_sign(dct)
+        msg0  = nickname + member_sign(dct) + "\n"
+        #网页签到
+        msg0 = msg0 + WebCheckin(dct) + "\n"
         #用户信息
         msg = msg0 + get_info(dct) + msg_draw + res_msg 
         end = time.perf_counter()
@@ -142,30 +146,85 @@ def member_sign(cookies_dict):
     签到
     '''
     P00001 = cookies_dict.get('P00001')
-    url = "https://serv.vip.iqiyi.com/vipgrowth/query.action"
-    params = {
-        "P00001": P00001
+    P00003 = cookies_dict.get('P00003')
+    dfp = cookies_dict.get('__dfp').split('@')[0]
+    sign_date = {
+        "agentType": "1",
+        "agentversion": "1.0",
+        "appKey": "basic_pcw",
+        "authCookie": P00001,
+        "qyid": md5(strRandom(16)),
+        "task_code": "natural_month_sign",
+        "timestamp": time_13(),
+        "typeCode": "point",
+        "userId": P00003
+        }
+    post_date = {
+        "natural_month_sign": {
+            "agentType": "1",
+            "agentversion": "1",
+            "authCookie": P00001,
+            "qyid": md5(strRandom(16)),
+            "taskCode": "iQIYI_mofhr",
+            "verticalCode": "iQIYI"
+        }
     }
-    try:
-        res = requests.get(url, params=params)
-        if res.json()["code"] == "A00000":
-            try:
-                print(res.json())
-                state = res.json()["msg"]
-                growthvalue = res.json()["data"]["growthvalue"]
-                msg = f"{state}\n当前 VIP 成长值:{growthvalue}天\n"                        
-            except:
-                print(res.json()["msg"])
-                print("签到失败\n")
-                msg = "失败\n"
+    sign = k('|', sign_date, "UKobMjDMsDoScuWOfp6F")
+    url = f"https://community.iqiyi.com/openApi/task/execute?{k('&', sign_date)}&sign={sign}"
+    header = {
+        'Content-Type': 'application/json'
+    }
+    res = requests.post(url, headers=header, data=dumps(post_date)).json()
+    if res['code'] == 'A00000':
+        if res['data']['code'] == 'A0000':
+            quantity = res['data']['data']['rewards'][0]['rewardCount']  # 积分
+            addgrowthvalue = res['data']['data']['rewards'][0]['rewardCount']  # 新增成长值
+            continued = res['data']['data']['signDays']  # 签到天数
+            msg = (f"签到成功:获得积分{quantity} 成长值{addgrowthvalue} 累计签到 {continued} 天")
         else:
-            print(res.json()["msg"])
-            print("签到失败1\n")
-            msg = "失败\n"
-        return msg
-    except:
-        print("签到失败2\n")
-        return "失败\n"
+            msg = (f"签到失败:{res['data']['msg']}")
+    else:
+        msg = (f"签到失败:{res['message']}")
+    return msg
+
+
+def WebCheckin(cookies_dict):
+    '''
+    网页签到
+    '''
+    P00001 = cookies_dict.get('P00001')
+    P00003 = cookies_dict.get('P00003')
+    dfp = cookies_dict.get('__dfp').split('@')[0]
+    web_sign_date = {
+        "agenttype": "1",
+        "agentversion": "0",
+        "appKey": "basic_pca",
+        "appver": "0",
+        "authCookie": P00001,
+        "channelCode": "sign_pcw",
+        "dfp": dfp,
+        "scoreType": "1",
+        "srcplatform": "1",
+        "typeCode": "point",
+        "userId": P00003,
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
+        "verticalCode": "iQIYI"
+    }
+    sign = k('|', web_sign_date, "DO58SzN6ip9nbJ4QkM8H")
+    url = f"https://community.iqiyi.com/openApi/score/add?{k('&', web_sign_date)}&sign={sign}"
+    res = requests.get(url).json()
+    if res['code'] == 'A00000':
+        if res['data'][0]['code'] == 'A0000':
+            quantity = res['data'][0]['score']  # 积分
+            continued = res['data'][0]['continuousValue']  # 累计签到天数
+            msg = (f"网页端签到成功: 获得积分{quantity} 累计签到{continued}天")
+        else:
+            msg = (f"网页端签到失败:{res['data'][0]['message']}")
+    else:
+        msg = (f"网页端签到失败:{res['message']}")
+    # print(msg)
+    return msg
+
 
 
 def get_info(cookies_dict):
@@ -268,6 +327,30 @@ def transform(infos,cookie):
         return
     return dct
 
+# 随机字符串 a-z A-Z 0-9
+def strRandom(num):
+    return ''.join(random.sample(string.ascii_letters + string.digits, num))
+
+
+# md5加密
+def md5(data):
+    return hashlib.md5(bytes(data, encoding='utf-8')).hexdigest()
+
+
+# 13位时间戳
+def time_13():
+    return round(time.time() * 1000)
+
+
+# 拼接 连接符 数据 特殊符号（可不填）
+def k(c, t, e=None):
+    buf = []
+    for key, value in t.items():
+        buf.append('='.join([key, str(value)]))
+    if e != None:
+        buf.append(e)
+        return (md5(c.join(buf)))
+    return (c.join(buf))
 
 if __name__=="__main__":
     print('='*40)
