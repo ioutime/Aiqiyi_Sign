@@ -34,17 +34,7 @@ pip install -r requirements.txt
 
 ### 本地执行脚本----local_action.py
 
-**必须**：**替换local_action.py的第十四行为自己的cookie值（下面有获取cookie的方法）**，否则运行不成功
-
-参数,选填
-
-```shell
-usage: local_action.py [-h] [-t TOKEN]
-
-optional arguments:
-  -h, --help  show this help message and exit
-  -t TOKEN    pushplus的token值
-```
+**必须**：**替换local_action.py的第十九行为自己的cookie值（下面有获取cookie的方法）**，否则运行不成功
 
 eg:
 
@@ -55,13 +45,18 @@ python local_action.py
 结果
 
 ```
-签到成功
-成长值+2
-连续签到：3天
-签到周期：3天/7天
-VIP等级：4
-升级需成长值：315
-VIP到期时间:2021-10-04
+========================================
+*****: 签到成功:获得积分4 成长值4 累计签到 2 天
+网页端签到成功: 获得积分6 累计签到2天
+VIP等级:5
+升级需成长值:4267
+VIP到期时间:2022-02-24
+今日抽奖次数:3
+第1次抽奖:《我们的父辈1》
+第3次抽奖:《我们的父辈1》
+第2次抽奖:《我们的父辈1》
+执行时间:7.906020096000248
+========================================
 ```
 
 
@@ -96,15 +91,11 @@ VIP到期时间:2021-10-04
 
 1. 访问[pushplus](http://www.pushplus.plus/)官网，登录
 2. 找到**一对一推送**，并复制你的**token**
-3. 执行脚本时指定参数`-t`，后接上述 token 值
+3. 执行脚本时替换token值
 
 <img src="img/2021-7-15 token.png"  />
 
-示例：
 
-```shell
-python local_action.py -t token
-```
 
 结果：
 
